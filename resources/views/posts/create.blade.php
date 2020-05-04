@@ -25,19 +25,50 @@
             @endif
         </div>
         
-        <!-- image -->
-          <div class="form-group col-md-6 @error('image') has-error @enderror">
-              {!! Form::label('image', 'Upload Logo') !!}
+        <!-- logo -->
+          <div class="form-group col-md-6 @error('logo') has-error @enderror">
+              {!! Form::label('logo', 'Upload Logo') !!}
               <div class="position-relative">
-                  {!! Form::file('image', ['class' => 'form-control', 'placeholder' => 'Choose an Image', 'required' => 'true', 'id' => 'image', 'accept'=>'image/*']) !!}
+                  {!! Form::file('logo', ['class' => 'form-control', 'placeholder' => 'Choose your Logo', 'required' => 'true', 'id' => 'logo', 'accept'=>'logo/*']) !!}
               </div>
               <div class="help-block"></div>
-              @error('image')
+              @error('logo')
                 <span class="help-block">
                     <strong>{{ $message }}</strong>
                 </span>
               @enderror
           </div>
+
+        <!-- image -->
+        <div class="form-group col-md-10 {{ $errors->has('image') ? ' has-error' : '' }}">
+            {!! Form::label('image', 'Image') !!}
+
+            <div class="position-relative">
+                {!! Form::file('image[]', ['class' => 'form-control', 'id' => 'image']) !!}
+            </div>
+        </div>
+        
+        <div class="form-group col-md-2">
+            {!! Form::label('add_image', 'Add Image') !!}
+            <div class="position-relative">
+                <button type="button" class="btn btn-success mr-1" id="add_image">
+                  <i class="ft-plus"></i> Add Image
+                </button>
+            </div>
+        </div>
+
+        <div id="more_images">
+            
+        </div>
+
+        <div class="form-group col-md-12">
+            @if ($errors->has('image.*'))
+                <span class="help-block">
+                    <strong>All images must be in the ratio (5:3) and less than 2 Mb.</strong>
+                </span>
+            @endif
+        </div>
+        <!-- end image -->
       </div>
       <div class="form-actions pb-3" align="center">
         <a href="{{ route('posts.index') }}"><button type="button" class="btn btn-warning mr-1">
@@ -50,4 +81,20 @@
     {!! Form::close() !!}
   </div>
 </div>
+
+@endsection
+
+@section('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#add_image').click(function(e){ 
+                e.preventDefault();
+                    $('#more_images').append('<div><div class="form-group {{ $errors->has('image') ? ' has-error' : '' }}"><div class="position-relative">{!! Form::file('image[]', ['class' => 'form-control', 'required' => 'true', 'id' => 'image']) !!}</div></div><div class="form-group"><div class="position-relative"><button type="button" class="btn btn-danger" id="remove_image"><i class="ft-minus"></i> Remove Image</button></div></div></div>');
+            });
+            
+            $('#more_images').on("click","#remove_image", function(e){ 
+                e.preventDefault(); $(this).parent('div').parent('div').parent('div').remove();
+            })
+        });
+    </script>
 @endsection

@@ -25,7 +25,7 @@ class EditPostRequest extends FormRequest
     {
         return [
             'name' => 'string|required|min:3|max:191',
-            'image' => 'nullable'
+            'logo' => 'nullable'
         ];
     }
 }

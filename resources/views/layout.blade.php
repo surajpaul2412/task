@@ -28,5 +28,6 @@
 	<!-- MDB core JavaScript -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.8/js/mdb.min.js"></script>
   	<script src="{{ asset('js/app.js') }}" type="text/js"></script>
+  	@yield('scripts')
 </body>
 </html>

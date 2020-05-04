@@ -6,6 +6,7 @@
     margin-top: 40px;
   }
 </style>
+@if($posts->count())
 <div class="uper">
   @if(session()->get('success'))
     <div class="alert alert-success">
@@ -16,8 +17,8 @@
     <thead>
         <tr>
           <td>ID</td>
-          <td> Name</td>
-          <td>icon</td>
+          <td>Name</td>
+          <td>Logo</td>
         </tr>
     </thead>
     <tbody>
@@ -25,10 +26,13 @@
         <tr>
             <td>{{$post->id}}</td>
             <td>{{$post->name}}</td>
-            <td>{{$post->logo}}</td>
+            <td><img src="{{$post->logo}}" width="100px"></td>
         </tr>
         @endforeach
     </tbody>
   </table>
 <div>
+@else
+create first
+@endif
 @endsection

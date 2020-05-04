@@ -52,7 +52,7 @@ class PostController extends Controller
     public function store(CreatePostRequest $request)
     {
         $input = $request->validated();
-
+    
         $result = $this->postService->createPost($input);
 
         if($result)

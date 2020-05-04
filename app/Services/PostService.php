@@ -5,6 +5,7 @@ use App\Models\Post;
 
 // Repositories
 use App\Repositories\PostRepository;
+use App\Repositories\ImageRepository;
 
 // Facades
 use Illuminate\Support\Facades\Storage;
@@ -59,12 +60,29 @@ class PostService extends BaseService
      */
     public function createPost($input)
     {
-        /* Save image in temporary variable and remove from the input array. */
-        $tempImage = $input['image'];
-        unset($input['image']);
+        // $tempImage = $input['logo'];
+        // unset($input['logo']);
+
+        // try{
+        //     $temp = Storage::put('/public/images/posts', $tempImage);
+        //     $input['logo'] = '/images/posts/'.basename($temp);
+            
+        // }catch(\Exception $e)
+        // {
+        //     \Log::channel('post')->error("post image not uploaded because an exception occured: ");
+        //     \Log::channel('post')->error($e->getMessage());
+
+        //     return false;
+        // }
+
+        // $post = $this->postRepository->createPost($input);
+                
+        // return $post;
+
+        $tempImage = $input['logo'];
+        unset($input['logo']);
 
         try{
-            /* Save image at the desired location. */
             $temp = Storage::put('/public/images/posts', $tempImage);
             $input['logo'] = '/images/posts/'.basename($temp);
             
@@ -76,10 +94,58 @@ class PostService extends BaseService
             return false;
         }
 
+        $inputImages = array();
+
+        if(isset($input['image']))
+        { 
+            try
+            {
+                foreach ($input['image'] as $value) {
+                    $image = $value;
+                    $temp = Storage::put('/public/images/posts', $image);
+                    $inputImages[] = basename($temp);
+                }
+            }catch (\Exception $e)
+            {
+                \Log::error("New post not created because an exception occured:");
+                \Log::error($e->getMessage());
+
+                return false;
+            }
+        }
+
         $post = $this->postRepository->createPost($input);
 
-                
-        return $post;
+        if ($post)
+        {
+            if(isset($input['image']))
+            { 
+                $this->ImageRepostiory = new ImageRepository();
+
+                $inputData = array();
+                $i = 0;
+                foreach ($inputImages as $key => $value) {
+                    $inputData[$i]['url'] = '/images/posts/'. $value;
+                    $inputData[$i]['imageable_id'] = $post->id;
+                    $inputData[$i]['imageable_type'] = 'App\Models\Post';
+                    $inputData[$i]['created_at'] = now();
+                    $inputData[$i]['updated_at'] = now();
+                    $i++;
+                }
+
+                $this->ImageRepostiory->insertImages($inputData);
+            }
+
+            return $post;
+        }
+        else
+        {
+            foreach ($inputImages as $key => $value) {
+                Storage::delete('/public/images/widgets/'.$value);
+            }
+
+            return $post;
+        }
     }
 
     /**
